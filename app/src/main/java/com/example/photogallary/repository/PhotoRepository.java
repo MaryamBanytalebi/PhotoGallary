@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.netWork.FlickrFetcher;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +34,8 @@ public class PhotoRepository {
 
             JSONObject bodyObject = new JSONObject(response);
             List<GalleryItem> items = parsejson(bodyObject);
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
 
             return items;
         } catch (IOException | JSONException e) {
@@ -44,6 +48,9 @@ public class PhotoRepository {
     private List<GalleryItem> parsejson(JSONObject bodyObject) throws JSONException {
         List<GalleryItem> items = new ArrayList<>();
 
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+
         JSONObject photosObject = bodyObject.getJSONObject("photos");
         JSONArray photoArray = photosObject.getJSONArray("photo");
 
@@ -55,11 +62,13 @@ public class PhotoRepository {
             if (!photoObject.has("url_s"))
                 continue;
 
-            String id = photoObject.getString("id");
+            /*String id = photoObject.getString("id");
             String title = photoObject.getString("title");
             String url_s = photoObject.getString("url_s");
 
-            GalleryItem item = new GalleryItem(id,title,url_s);
+            GalleryItem item = new GalleryItem(id,title,url_s);*/
+            GalleryItem item = gson.fromJson(String.valueOf(photoObject),GalleryItem.class);
+
             items.add(item);
 
         }
