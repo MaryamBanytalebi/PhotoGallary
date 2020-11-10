@@ -8,8 +8,10 @@ import androidx.fragment.app.FragmentManager;
 import android.os.Bundle;
 
 import com.example.photogallary.R;
+import com.example.photogallary.databinding.ActivityFragmentBinding;
 
 public abstract class SingleFragmentActivity extends AppCompatActivity {
+    ActivityFragmentBinding mBinding;
 
     public abstract Fragment createFragment();
 
@@ -18,7 +20,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //inflate layout for activity
-        DataBindingUtil.setContentView(this,R.layout.activity_fragment);
+        mBinding = DataBindingUtil.setContentView(this,R.layout.activity_fragment);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
 
