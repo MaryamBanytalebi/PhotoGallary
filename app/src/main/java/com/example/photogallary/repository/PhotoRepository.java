@@ -2,8 +2,12 @@ package com.example.photogallary.repository;
 
 import android.util.Log;
 
+import androidx.lifecycle.MutableLiveData;
+
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.netWork.FlickrFetcher;
+import com.example.photogallary.netWork.NetworkParams;
+import com.example.photogallary.netWork.retrofit.FlickrService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -15,13 +19,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class PhotoRepository {
 
     public static final String TAG = "photRepository";
+    private final MutableLiveData<List<GalleryItem>> mSearchItemsLiveData = new MutableLiveData<>();
+
     private FlickrFetcher mFetcher;
+    private FlickrService mFlickrService;
 
     public PhotoRepository() {
         mFetcher= new FlickrFetcher();
+    }
+
+    public MutableLiveData<List<GalleryItem>> getSearchItemsLiveData() {
+        return mSearchItemsLiveData;
     }
 
     public List<GalleryItem> fetchItems() {
@@ -43,6 +58,29 @@ public class PhotoRepository {
 
             return null;
         }
+    }
+
+    public void fetchSearchItemsAsync(String query){
+        Call<List<GalleryItem>> call =
+                mFlickrService.listItems(NetworkParams.getSearchOptions(query));
+
+        call.enqueue(new Callback<List<GalleryItem>>() {
+
+            //this run on main thread
+            @Override
+            public void onResponse(Call<List<GalleryItem>> call, Response<List<GalleryItem>> response) {
+                List<GalleryItem> items = response.body();
+
+                //update adapter of recyclerview
+                mSearchItemsLiveData.setValue(items);
+            }
+
+            //this run on main thread
+            @Override
+            public void onFailure(Call<List<GalleryItem>> call, Throwable t) {
+                Log.e(TAG, t.getMessage(), t);
+            }
+        });
     }
 
     private List<GalleryItem> parsejson(JSONObject bodyObject) throws JSONException {

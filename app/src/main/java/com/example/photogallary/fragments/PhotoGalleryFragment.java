@@ -8,7 +8,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -16,16 +19,23 @@ import android.os.Handler;
 import android.util.Log;
 import android.util.LruCache;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.example.photogallary.databinding.FragmentPhotoGalleryBinding;
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.R;
 import com.example.photogallary.netWork.FlickrFetcher;
 import com.example.photogallary.repository.PhotoRepository;
 import com.example.photogallary.services.ThumbNailDownloader;
+import com.example.photogallary.utilities.QueryPreferences;
+import com.example.photogallary.viewModel.PhotoGalleryViewModel;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,11 +46,13 @@ public class PhotoGalleryFragment extends Fragment {
     public static final int SPAN_COUNT = 2;
     public static final String TAG = "PGF";
 
-    private RecyclerView mRecyclerView;
     private PhotoRepository mRepository;
     private Handler mHandlerUI;
+    private PhotoGalleryViewModel mViewModel;
+
     private ThumbNailDownloader<PhotoHolder> mThumbNailDownloader;
     private LruCache<String, Bitmap> memoryCache;
+    private FragmentPhotoGalleryBinding mBinding;
 
 
     public PhotoGalleryFragment() {
@@ -58,6 +70,7 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
 
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         final int cacheSize = maxMemory / 8;
@@ -127,23 +140,80 @@ public class PhotoGalleryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_photo_gallery, container, false);
-        findViews(view);
+        mBinding = DataBindingUtil.inflate(inflater,
+                R.layout.fragment_photo_gallery,
+                container,
+                false);
         initViews();
-        return view;
+        return mBinding.getRoot();
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.fragment_photo_gallery,menu);
+        MenuItem searchMenuItem = menu.findItem(R.id.menu_item_search);
+        SearchView searchView = (SearchView) searchMenuItem.getActionView();
+        setMenuItemListener(searchView);
+    }
+
+    private void setMenuItemListener(SearchView searchView) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                //QueryPreferences.setTestQuery(getContext(),true);
+                mViewModel.setQueryInPreferences(query);
+                mViewModel.fetchSearchItemsAsync(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String query = mViewModel.getQueryFromPreferences();
+                if (query != null)
+                    //false beacause of dont submit again just show the history of search
+                    searchView.setQuery(query,false);
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_clear:
+                //null or remove
+                mViewModel.setQueryInPreferences(null);
+                mViewModel.fetchItems();
+            default:
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     private void initViews() {
-        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), SPAN_COUNT));
+        mBinding.recyclerViewPhotoGallery.setLayoutManager(new GridLayoutManager(getContext(), SPAN_COUNT));
     }
 
-    private void findViews(View view) {
-        mRecyclerView = view.findViewById(R.id.recycler_view_photo_gallery);
+    private void setLiveDataObservers(){
+        mViewModel.getsearchItemsLiveData().observe(this, new Observer<List<GalleryItem>>() {
+            @Override
+            public void onChanged(List<GalleryItem> items) {
+                setupAdapter(items);
+            }
+        });
+
     }
 
     private void setupAdapter(List<GalleryItem> items) {
         PhotoAdapter adapter = new PhotoAdapter(new ArrayList<>());
-        mRecyclerView.setAdapter(adapter);
+        mBinding.recyclerViewPhotoGallery.setAdapter(adapter);
     }
 
     public class PhotoHolder extends RecyclerView.ViewHolder {
