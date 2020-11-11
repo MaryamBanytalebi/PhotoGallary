@@ -7,7 +7,10 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.netWork.FlickrFetcher;
 import com.example.photogallary.netWork.NetworkParams;
+import com.example.photogallary.netWork.model.FlickrResponse;
+import com.example.photogallary.netWork.model.PhotoItem;
 import com.example.photogallary.netWork.retrofit.FlickrService;
+import com.example.photogallary.netWork.retrofit.RetrofitInstance;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -18,21 +21,25 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class PhotoRepository {
 
     public static final String TAG = "photRepository";
     private final MutableLiveData<List<GalleryItem>> mSearchItemsLiveData = new MutableLiveData<>();
 
-    private FlickrFetcher mFetcher;
+    //private FlickrFetcher mFetcher;
     private FlickrService mFlickrService;
 
     public PhotoRepository() {
-        mFetcher= new FlickrFetcher();
+       // mFetcher= new FlickrFetcher();
+        Retrofit retrofit = RetrofitInstance.getInstance();
+        mFlickrService = RetrofitInstance.getInstance().create(FlickrService.class);
     }
 
     public MutableLiveData<List<GalleryItem>> getSearchItemsLiveData() {
@@ -40,8 +47,7 @@ public class PhotoRepository {
     }
 
     public List<GalleryItem> fetchItems() {
-
-        String url = mFetcher.getRecentUrl();
+        /*String url = mFetcher.getRecentUrl();
 
         try {
             String response = mFetcher.getUrlString(url);
@@ -57,10 +63,32 @@ public class PhotoRepository {
             Log.e(TAG, e.getMessage(), e);
 
             return null;
+        }*/
+        //call listItems methos to set QueryParemeters
+        Call<FlickrResponse> call = mFlickrService.listItems(NetworkParams.BASE_OPTIONS);
+        List<GalleryItem> items = new ArrayList<>();
+
+        try {
+            Response<FlickrResponse> response = call.execute();
+            FlickrResponse flickrResponse = response.body();
+
+            for (PhotoItem photoItem: flickrResponse.getPhotos().getPhoto()) {
+                GalleryItem item = new GalleryItem(
+                        photoItem.getId(),
+                        photoItem.getTitle(),
+                        photoItem.getUrlS());
+
+                items.add(item);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage(), e);
+        } finally {
+            return items;
         }
     }
 
-    public void fetchSearchItemsAsync(String query){
+
+   /* public void fetchSearchItemsAsync(String query){
         Call<List<GalleryItem>> call =
                 mFlickrService.listItems(NetworkParams.getSearchOptions(query));
 
@@ -81,9 +109,9 @@ public class PhotoRepository {
                 Log.e(TAG, t.getMessage(), t);
             }
         });
-    }
+    }*/
 
-    private List<GalleryItem> parsejson(JSONObject bodyObject) throws JSONException {
+   /* private List<GalleryItem> parsejson(JSONObject bodyObject) throws JSONException {
         List<GalleryItem> items = new ArrayList<>();
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -100,16 +128,16 @@ public class PhotoRepository {
             if (!photoObject.has("url_s"))
                 continue;
 
-            /*String id = photoObject.getString("id");
+            *//*String id = photoObject.getString("id");
             String title = photoObject.getString("title");
             String url_s = photoObject.getString("url_s");
 
-            GalleryItem item = new GalleryItem(id,title,url_s);*/
+            GalleryItem item = new GalleryItem(id,title,url_s);*//*
             GalleryItem item = gson.fromJson(String.valueOf(photoObject),GalleryItem.class);
 
             items.add(item);
 
         }
         return items;
-    }
+    }*/
 }

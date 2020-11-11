@@ -12,6 +12,8 @@ public class NetworkParams {
     public static final String API_KEY = "79b5c28546b0c0fd5a0bdc65ac9eab18";
 
     public static final Map<String, String> BASE_OPTIONS = new HashMap<String, String>() {{
+
+        //inline initialize by double bracet for Map!!
         put("api_key", API_KEY);
         put("format", "json");
         put("nojsoncallback", "1");
