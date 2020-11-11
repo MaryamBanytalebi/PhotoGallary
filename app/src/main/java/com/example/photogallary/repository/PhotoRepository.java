@@ -35,11 +35,12 @@ public class PhotoRepository {
 
     //private FlickrFetcher mFetcher;
     private FlickrService mFlickrService;
+    private Retrofit mRetrofit;
 
     public PhotoRepository() {
        // mFetcher= new FlickrFetcher();
-        Retrofit retrofit = RetrofitInstance.getInstance();
-        mFlickrService = RetrofitInstance.getInstance().create(FlickrService.class);
+        mRetrofit = RetrofitInstance.getInstance();
+        mFlickrService = mRetrofit.create(FlickrService.class);
     }
 
     public MutableLiveData<List<GalleryItem>> getSearchItemsLiveData() {
@@ -65,26 +66,22 @@ public class PhotoRepository {
             return null;
         }*/
         //call listItems methos to set QueryParemeters
-        Call<FlickrResponse> call = mFlickrService.listItems(NetworkParams.BASE_OPTIONS);
+        Call<List<GalleryItem>> call = mFlickrService.listItems(NetworkParams.BASE_OPTIONS);
         List<GalleryItem> items = new ArrayList<>();
 
         try {
-            Response<FlickrResponse> response = call.execute();
-            FlickrResponse flickrResponse = response.body();
+            Response<List<GalleryItem>> response = call.execute();
+            return response.body();
 
-            for (PhotoItem photoItem: flickrResponse.getPhotos().getPhoto()) {
-                GalleryItem item = new GalleryItem(
-                        photoItem.getId(),
-                        photoItem.getTitle(),
-                        photoItem.getUrlS());
-
-                items.add(item);
-            }
         } catch (IOException e) {
             Log.e(TAG, e.getMessage(), e);
         } finally {
             return items;
         }
+    }
+
+    public void fetchItemsAsync(){
+
     }
 
 

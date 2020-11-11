@@ -86,8 +86,8 @@ public class PhotoGalleryFragment extends Fragment {
             }
         };
 
-        FlickrTask flickrTask = new FlickrTask();
-        flickrTask.execute();
+       /* FlickrTask flickrTask = new FlickrTask();
+        flickrTask.execute();*/
 
        /* Handler uiHandler = new Handler();
 
@@ -293,7 +293,8 @@ public class PhotoGalleryFragment extends Fragment {
         }
     }
 
-    private class FlickrTask extends AsyncTask<Void,Void,List<GalleryItem>>{
+    // retrofit handle  thread so we do not need AsynTask!
+    /*private class FlickrTask extends AsyncTask<Void,Void,List<GalleryItem>>{
 
         //this method runs on background thread
         @Override
@@ -311,5 +312,5 @@ public class PhotoGalleryFragment extends Fragment {
 
             setupAdapter(items);
         }
-    }
+    }*/
 }

@@ -13,6 +13,6 @@ import retrofit2.http.QueryMap;
 public interface FlickrService {
 
     @GET(".")
-    Call<FlickrResponse> listItems(@QueryMap Map<String, String> options);
+    Call<List<GalleryItem>> listItems(@QueryMap Map<String, String> options);
 
 }
