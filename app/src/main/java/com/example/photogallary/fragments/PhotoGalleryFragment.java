@@ -89,6 +89,13 @@ public class PhotoGalleryFragment extends Fragment {
        /* FlickrTask flickrTask = new FlickrTask();
         flickrTask.execute();*/
 
+        mRepository.fetchPopularItemsAsync(new PhotoRepository.Callbacks() {
+            @Override
+            public void onItemResponse(List<GalleryItem> items) {
+                setupAdapter(items);
+            }
+        });
+
        /* Handler uiHandler = new Handler();
 
         mThumbNailDownloader = new ThumbNailDownloader(uiHandler);

@@ -44,6 +44,7 @@ public class PhotoRepository {
         return mSearchItemsLiveData;
     }
 
+    //this method must run on background Thread
     public List<GalleryItem> fetchItems() {
         /*String url = mFetcher.getRecentUrl();
 
@@ -77,10 +78,29 @@ public class PhotoRepository {
         }
     }
 
-    public void fetchItemsAsync(){
+    public void fetchPopularItemsAsync(Callbacks callbacks){
+        Call<List<GalleryItem>> call = mFlickrService.listItems(NetworkParams.BASE_OPTIONS);
+        List<GalleryItem> items = new ArrayList<>();
 
+        call.enqueue(new Callback<List<GalleryItem>>() {
+            @Override
+            public void onResponse(Call<List<GalleryItem>> call, Response<List<GalleryItem>> response) {
+                List<GalleryItem> items = response.body();
+                //update adapter of recyclerview
+                callbacks.onItemResponse(items);
+            }
+
+            @Override
+            public void onFailure(Call<List<GalleryItem>> call, Throwable t) {
+                Log.e(TAG,t.getMessage(),t);
+
+            }
+        });
     }
 
+    public interface Callbacks{
+        void onItemResponse(List<GalleryItem> items);
+    }
 
     public void fetchSearchItemsAsync(String query){
         Call<List<GalleryItem>> call =
