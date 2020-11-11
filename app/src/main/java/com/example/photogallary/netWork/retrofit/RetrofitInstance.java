@@ -16,15 +16,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RetrofitInstance {
 
-    public static Retrofit getInstance(){
+    private static RetrofitInstance sInstance;
+    private Retrofit mRetrofit;
 
-        return new Retrofit.Builder()
-                .baseUrl(NetworkParams.BASE_URL)
-                //htis is for automatically
-                //.addConverterFactory(GsonConverterFactory.create())
-                //this for customize
-                .addConverterFactory(createGsonConverter())
-                .build();
+    public static RetrofitInstance getInstance(){
+
+        if (sInstance == null)
+        sInstance = new RetrofitInstance();
+        return sInstance;
     }
 
     private static Converter.Factory createGsonConverter() {
@@ -36,5 +35,20 @@ public class RetrofitInstance {
         Gson gson = gsonBuilder.create();
 
         return GsonConverterFactory.create(gson);
+    }
+
+    public Retrofit getRetrofit() {
+        return mRetrofit;
+    }
+
+    private RetrofitInstance(){
+        mRetrofit = new Retrofit.Builder()
+                .baseUrl(NetworkParams.BASE_URL)
+                //htis is for automatically
+                //.addConverterFactory(GsonConverterFactory.create())
+                //this for customize
+                .addConverterFactory(createGsonConverter())
+                .build();
+
     }
 }

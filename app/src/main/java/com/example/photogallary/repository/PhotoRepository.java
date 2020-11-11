@@ -7,8 +7,6 @@ import androidx.lifecycle.MutableLiveData;
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.netWork.FlickrFetcher;
 import com.example.photogallary.netWork.NetworkParams;
-import com.example.photogallary.netWork.model.FlickrResponse;
-import com.example.photogallary.netWork.model.PhotoItem;
 import com.example.photogallary.netWork.retrofit.FlickrService;
 import com.example.photogallary.netWork.retrofit.RetrofitInstance;
 import com.google.gson.Gson;
@@ -35,12 +33,11 @@ public class PhotoRepository {
 
     //private FlickrFetcher mFetcher;
     private FlickrService mFlickrService;
-    private Retrofit mRetrofit;
 
     public PhotoRepository() {
        // mFetcher= new FlickrFetcher();
-        mRetrofit = RetrofitInstance.getInstance();
-        mFlickrService = mRetrofit.create(FlickrService.class);
+        Retrofit retrofit = RetrofitInstance.getInstance().getRetrofit();
+        mFlickrService = retrofit.create(FlickrService.class);
     }
 
     public MutableLiveData<List<GalleryItem>> getSearchItemsLiveData() {
@@ -85,7 +82,7 @@ public class PhotoRepository {
     }
 
 
-   /* public void fetchSearchItemsAsync(String query){
+    public void fetchSearchItemsAsync(String query){
         Call<List<GalleryItem>> call =
                 mFlickrService.listItems(NetworkParams.getSearchOptions(query));
 
@@ -106,7 +103,7 @@ public class PhotoRepository {
                 Log.e(TAG, t.getMessage(), t);
             }
         });
-    }*/
+    }
 
    /* private List<GalleryItem> parsejson(JSONObject bodyObject) throws JSONException {
         List<GalleryItem> items = new ArrayList<>();
