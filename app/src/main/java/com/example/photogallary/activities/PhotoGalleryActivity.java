@@ -20,6 +20,10 @@ public class PhotoGalleryActivity extends SingleFragmentActivity {
     private boolean mBound = false;
     private static int instansec = 1;
 
+    public static Intent newIntent(Context context){
+        return new Intent(context,PhotoGalleryActivity.class);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

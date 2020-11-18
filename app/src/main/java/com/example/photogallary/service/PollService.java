@@ -2,6 +2,7 @@ package com.example.photogallary.service;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -13,7 +14,11 @@ import android.util.TimeUtils;
 
 import androidx.annotation.LongDef;
 import androidx.annotation.RequiresApi;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
+import com.example.photogallary.R;
+import com.example.photogallary.activities.PhotoGalleryActivity;
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.repository.PhotoRepository;
 import com.example.photogallary.utilities.QueryPreferences;
@@ -61,11 +66,34 @@ public class PollService extends IntentService {
         if (! serverId.equals(lastSaveId) ) {
             Log.d(TAG,"show notification");
             //show notification
+
+            setAndShowNotification();
         }
         else
             Log.d(TAG,"od nothing");
         QueryPreferences.setLastId(this,serverId);
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void setAndShowNotification() {
+        PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                0,
+                PhotoGalleryActivity.newIntent(this),
+                0);
+        String channelId = getResources().getString(R.string.channel_id);
+        Notification notification = new NotificationCompat.Builder(this,channelId)
+                .setContentTitle(getResources().getString(R.string.new_pictures_title))
+                .setContentText(getResources().getString(R.string.new_pictures_text))
+                .setSmallIcon(android.R.drawable.ic_menu_report_image)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .build();
+
+
+        NotificationManagerCompat notificationManagerCompat =
+                getSystemService(NotificationManagerCompat.class);
+        notificationManagerCompat.notify(1,notification);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
