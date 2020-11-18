@@ -162,7 +162,7 @@ public class PhotoGalleryFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 //QueryPreferences.setTestQuery(getContext(),true);
-                mViewModel.setQueryInPreferences(query);
+                mViewModel.fetchPopularItemsAsync(query);
                 mViewModel.fetchSearchItemsAsync(query);
                 return true;
             }
@@ -202,6 +202,13 @@ public class PhotoGalleryFragment extends Fragment {
 
     private void setLiveDataObservers(){
         mViewModel.getsearchItemsLiveData().observe(this, new Observer<List<GalleryItem>>() {
+            @Override
+            public void onChanged(List<GalleryItem> items) {
+                setupAdapter(items);
+            }
+        });
+
+        mViewModel.getPopularItemsLiveData().observe(this, new Observer<List<GalleryItem>>() {
             @Override
             public void onChanged(List<GalleryItem> items) {
                 setupAdapter(items);
@@ -299,7 +306,7 @@ public class PhotoGalleryFragment extends Fragment {
         @Override
         protected List<GalleryItem> doInBackground(Void... voids) {
 
-            List<GalleryItem> items = mRepository.fetchItems();
+            List<GalleryItem> items = mRepository.fetchPopularItems();
 
             return items;
         }

@@ -9,6 +9,7 @@ public class NetworkParams {
     public static final String BASE_URL = "https://www.flickr.com/services/rest/";
     public static final String METHOD_RECENT = "flickr.photos.getRecent";
     public static final String METHOD_SEARCH = "flickr.photos.search";
+    public static final String METHOD_Popular = "flickr.photos.popular";
     public static final String API_KEY = "79b5c28546b0c0fd5a0bdc65ac9eab18";
 
     public static final Map<String, String> BASE_OPTIONS = new HashMap<String, String>() {{
@@ -18,6 +19,15 @@ public class NetworkParams {
         put("extras", "url_s");
         put("user_id", "34427466731@N01");
     }};
+
+    public static Map<String,String> getPopularOptions(String query){
+
+        Map<String,String> popularOptions = new HashMap<>();
+        popularOptions.putAll(BASE_OPTIONS);
+        popularOptions.put("method",METHOD_Popular);
+        popularOptions.put("text",query);
+        return popularOptions;
+    }
 
     public static Map<String,String> getSearchOptions(String query){
 

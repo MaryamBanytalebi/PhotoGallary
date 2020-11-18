@@ -27,6 +27,7 @@ public class PhotoRepository {
 
     public static final String TAG = "photRepository";
     private final MutableLiveData<List<GalleryItem>> mSearchItemsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<GalleryItem>> mPopularItemsLiveData = new MutableLiveData<>();
 
     private FlickrFetcher mFetcher;
     private FlickrService mFlickrService;
@@ -39,7 +40,11 @@ public class PhotoRepository {
         return mSearchItemsLiveData;
     }
 
-    public List<GalleryItem> fetchItems() {
+    public MutableLiveData<List<GalleryItem>> getPopularItemsLiveData() {
+        return mPopularItemsLiveData;
+    }
+
+    public List<GalleryItem> fetchPopularItems() {
 
         String url = mFetcher.getRecentUrl();
 
@@ -59,6 +64,52 @@ public class PhotoRepository {
             return null;
         }
     }
+
+    public void fetchPopularItemsAsync(String query){
+        Call<List<GalleryItem>> call =
+                mFlickrService.listItems(NetworkParams.getSearchOptions(query));
+
+        call.enqueue(new Callback<List<GalleryItem>>() {
+
+            //this run on main thread
+            @Override
+            public void onResponse(Call<List<GalleryItem>> call, Response<List<GalleryItem>> response) {
+                List<GalleryItem> items = response.body();
+
+                //update adapter of recyclerview
+                mSearchItemsLiveData.setValue(items);
+            }
+
+            //this run on main thread
+            @Override
+            public void onFailure(Call<List<GalleryItem>> call, Throwable t) {
+                Log.e(TAG, t.getMessage(), t);
+            }
+        });
+    }
+
+    public List<GalleryItem> fetchSearchItems(String query) {
+
+        String url = mFetcher.getRecentUrl();
+
+        try {
+            String response = mFetcher.getUrlString(url);
+            Log.d(TAG, "response" + response);
+
+            JSONObject bodyObject = new JSONObject(response);
+            List<GalleryItem> items = parsejson(bodyObject);
+            Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+
+            return items;
+        } catch (IOException | JSONException e) {
+            Log.e(TAG, e.getMessage(), e);
+
+            return null;
+        }
+    }
+
+
 
     public void fetchSearchItemsAsync(String query){
         Call<List<GalleryItem>> call =
@@ -82,6 +133,7 @@ public class PhotoRepository {
             }
         });
     }
+
 
     private List<GalleryItem> parsejson(JSONObject bodyObject) throws JSONException {
         List<GalleryItem> items = new ArrayList<>();

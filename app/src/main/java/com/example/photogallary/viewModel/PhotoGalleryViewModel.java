@@ -18,17 +18,21 @@ public class PhotoGalleryViewModel extends AndroidViewModel {
 
     private PhotoRepository mRepository;
     private final LiveData<List<GalleryItem>> msearchItemsLiveData;
+    private final LiveData<List<GalleryItem>> mpopularItemsLiveData;
 
     public PhotoGalleryViewModel(@NonNull Application application) {
         super(application);
         mRepository = new PhotoRepository();
         //beacase write observer
         msearchItemsLiveData = mRepository.getSearchItemsLiveData();
+        mpopularItemsLiveData = mRepository.getPopularItemsLiveData();
     }
 
     public LiveData<List<GalleryItem>> getsearchItemsLiveData() {
         return msearchItemsLiveData;
     }
+    public LiveData<List<GalleryItem>> getPopularItemsLiveData() {
+        return mpopularItemsLiveData; }
 
     /*public PhotoGalleryViewModel() {
         mRepository = new PhotoRepository();
@@ -52,14 +56,28 @@ public class PhotoGalleryViewModel extends AndroidViewModel {
         return QueryPreferences.getSearchQuery(getApplication());
     }
 
+    public void fetchPopularItemsAsync(String query){
+        mRepository.fetchPopularItemsAsync(query);
+    }
+
+    public void setPopularQueryInPreferences(String query){
+
+        QueryPreferences.setPrefSearchQuery(getApplication(),query);
+    }
+
+    public String getPopularQueryFromPreferences(){
+
+        return QueryPreferences.getSearchQuery(getApplication());
+    }
+
     public void fetchItems() {
         String query = QueryPreferences.getSearchQuery(getApplication());
         fetchSearchItemsAsync(query);
         //TODO
-        /*if (query != null) {
+        if (query != null) {
             fetchSearchItemsAsync(query);
         } else {
-            fetchPopularItemsAsync();
-        }*/
+            fetchPopularItemsAsync(query);
+        }
     }
 }

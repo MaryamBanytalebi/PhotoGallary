@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.photogallary">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -12,9 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PhotoGallary">
         <service
+            android:name=".service.PollService"
+            android:exported="false"></service>
+        <service
             android:name=".service.MyService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity android:name=".activities.SingleFragmentActivity" />
         <activity android:name=".activities.PhotoGalleryActivity">
