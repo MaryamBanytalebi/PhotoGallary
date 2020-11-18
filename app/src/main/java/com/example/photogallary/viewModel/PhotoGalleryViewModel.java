@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.repository.PhotoRepository;
+import com.example.photogallary.service.PollService;
 import com.example.photogallary.utilities.QueryPreferences;
 
 import java.util.List;
@@ -79,5 +80,14 @@ public class PhotoGalleryViewModel extends AndroidViewModel {
         } else {
             fetchPopularItemsAsync(query);
         }
+    }
+
+    public void togglePolling(){
+        boolean isOn = PollService.isAlarmSet(getApplication());
+        PollService.scheduleAlarm(getApplication(), !isOn);
+    }
+
+    public boolean isAlarmScheduled(){
+        return PollService.isAlarmSet(getApplication());
     }
 }

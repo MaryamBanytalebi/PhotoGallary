@@ -33,6 +33,7 @@ import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.R;
 import com.example.photogallary.netWork.FlickrFetcher;
 import com.example.photogallary.repository.PhotoRepository;
+import com.example.photogallary.service.PollService;
 import com.example.photogallary.utilities.QueryPreferences;
 import com.example.photogallary.viewModel.PhotoGalleryViewModel;
 import com.squareup.picasso.Picasso;
@@ -154,10 +155,16 @@ public class PhotoGalleryFragment extends Fragment {
         inflater.inflate(R.menu.fragment_photo_gallery,menu);
         MenuItem searchMenuItem = menu.findItem(R.id.menu_item_search);
         SearchView searchView = (SearchView) searchMenuItem.getActionView();
-        setMenuItemListener(searchView);
+        setSearchViewListeners(searchView);
+
+        MenuItem toggleMenuItem = menu.findItem(R.id.menu_item_poll_toggling);
+        if (mViewModel.isAlarmScheduled()){
+            toggleMenuItem.setTitle("stop polling");
+        }
+        else toggleMenuItem.setTitle("start polling");
     }
 
-    private void setMenuItemListener(SearchView searchView) {
+    private void setSearchViewListeners(SearchView searchView) {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -191,6 +198,15 @@ public class PhotoGalleryFragment extends Fragment {
                 //null or remove
                 mViewModel.setQueryInPreferences(null);
                 mViewModel.fetchItems();
+                return true;
+            case R.id.menu_item_poll_toggling:
+
+                //transfer to viewmodel
+                /*boolean isOn = PollService.isAlarmSet(getActivity());
+                PollService.scheduleAlarm(getActivity(), !isOn);*/
+                mViewModel.togglePolling();
+                getActivity().invalidateOptionsMenu();//build option menu again
+                return true;
             default:
             return super.onOptionsItemSelected(item);
         }
@@ -218,7 +234,7 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
     private void setupAdapter(List<GalleryItem> items) {
-        PhotoAdapter adapter = new PhotoAdapter(new ArrayList<>());
+        PhotoAdapter adapter = new PhotoAdapter(mViewModel);
         mBinding.recyclerViewPhotoGallery.setAdapter(adapter);
     }
 
@@ -277,8 +293,8 @@ public class PhotoGalleryFragment extends Fragment {
             mItems = items;
         }
 
-        public PhotoAdapter(List<GalleryItem> items) {
-            mItems = items;
+        public PhotoAdapter(PhotoGalleryViewModel viewModel) {
+            mViewModel = viewModel;
         }
 
         @NonNull
