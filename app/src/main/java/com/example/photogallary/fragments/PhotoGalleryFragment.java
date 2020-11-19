@@ -1,9 +1,6 @@
 package com.example.photogallary.fragments;
 
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
@@ -11,12 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
-import android.util.Log;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,20 +21,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 import com.example.photogallary.databinding.FragmentPhotoGalleryBinding;
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.R;
-import com.example.photogallary.netWork.FlickrFetcher;
 import com.example.photogallary.repository.PhotoRepository;
-import com.example.photogallary.service.PollService;
-import com.example.photogallary.utilities.QueryPreferences;
 import com.example.photogallary.viewModel.PhotoGalleryViewModel;
 import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class PhotoGalleryFragment extends Fragment {
@@ -158,7 +147,7 @@ public class PhotoGalleryFragment extends Fragment {
         setSearchViewListeners(searchView);
 
         MenuItem toggleMenuItem = menu.findItem(R.id.menu_item_poll_toggling);
-        if (mViewModel.isAlarmScheduled()){
+        if (mViewModel.isTaskScheduled()){
             toggleMenuItem.setTitle("stop polling");
         }
         else toggleMenuItem.setTitle("start polling");

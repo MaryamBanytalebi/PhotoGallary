@@ -1,6 +1,7 @@
 package com.example.photogallary.viewModel;
 
 import android.app.Application;
+import android.os.Build;
 import android.provider.ContactsContract;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.repository.PhotoRepository;
+import com.example.photogallary.service.PollJobService;
 import com.example.photogallary.service.PollService;
 import com.example.photogallary.utilities.QueryPreferences;
 
@@ -83,11 +85,21 @@ public class PhotoGalleryViewModel extends AndroidViewModel {
     }
 
     public void togglePolling(){
-        boolean isOn = PollService.isAlarmSet(getApplication());
-        PollService.scheduleAlarm(getApplication(), !isOn);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            boolean isOn = PollService.isAlarmSet(getApplication());
+            PollService.scheduleAlarm(getApplication(), !isOn);
+        }
+        else{
+            boolean isOn = PollJobService.isJobSchedule(getApplication());
+            PollJobService.scheduleJob(getApplication(),!isOn);
+        }
     }
 
-    public boolean isAlarmScheduled(){
-        return PollService.isAlarmSet(getApplication());
+    public boolean isTaskScheduled() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return PollService.isAlarmSet(getApplication());
+        } else {
+            return PollJobService.isJobSchedule(getApplication());
+        }
     }
 }

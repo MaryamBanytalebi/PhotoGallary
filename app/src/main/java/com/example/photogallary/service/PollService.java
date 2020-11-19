@@ -22,6 +22,7 @@ import com.example.photogallary.activities.PhotoGalleryActivity;
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.repository.PhotoRepository;
 import com.example.photogallary.utilities.QueryPreferences;
+import com.example.photogallary.utilities.ServicesUtils;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -69,9 +70,12 @@ public class PollService extends IntentService {
 
             setAndShowNotification();
         }
-        else
-            Log.d(TAG,"od nothing");
-        QueryPreferences.setLastId(this,serverId);
+        else {
+            Log.d(TAG, "do nothing");
+            QueryPreferences.setLastId(this, serverId);
+        }
+
+        ServicesUtils.pollAndShowNotification(this,TAG);
 
     }
 
