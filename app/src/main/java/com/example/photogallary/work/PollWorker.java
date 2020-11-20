@@ -2,11 +2,14 @@ package com.example.photogallary.work;
 
 import android.content.Context;
 import android.provider.SyncStateContract;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.work.Constraints;
+import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 import androidx.work.WorkRequest;
 import androidx.work.Worker;
@@ -14,11 +17,14 @@ import androidx.work.WorkerParameters;
 
 import com.example.photogallary.utilities.ServicesUtils;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class PollWorker extends Worker {
 
     public static final String TAG = "POLL_WORKER";
+    public static final String POLL_WORKER_NAME = "poll worker name";
 
     public PollWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
@@ -34,27 +40,47 @@ public class PollWorker extends Worker {
 
     public static void enqueueWork(Context context,boolean isOn) {
 
+        Log.d(TAG,"enqueue work");
         WorkManager workManager = WorkManager.getInstance(context);
 
         if (isOn) {
+            Log.d(TAG,"enqueued");
             Constraints constraints = new Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.UNMETERED)
                     .build();
 
-            WorkRequest workRequest = new PeriodicWorkRequest
+            PeriodicWorkRequest periodicWorkRequest = new PeriodicWorkRequest
                     .Builder(PollWorker.class,15, TimeUnit.MINUTES)
                     .setConstraints(constraints)
                     .build();
-            workManager.enqueue(workRequest);
-        }
-        else {
-            workManager.cancelAllWork();
+            workManager.enqueueUniquePeriodicWork(POLL_WORKER_NAME,
+                    ExistingPeriodicWorkPolicy.KEEP,
+                    periodicWorkRequest);
+        } else {
+            Log.d(TAG,"cancel");
+            workManager.cancelUniqueWork(POLL_WORKER_NAME);
         }
     }
 
     public static boolean isWorkEnqueued(Context context){
-        //TODO
-        return true;
-    }
 
+        WorkManager workManager = WorkManager.getInstance(context);
+        try {
+            List<WorkInfo> workInfos =
+                    workManager.getWorkInfosForUniqueWork(POLL_WORKER_NAME).get();
+
+            for (WorkInfo workInfo: workInfos) {
+                if (workInfo.getState() ==  WorkInfo.State.ENQUEUED ||
+                        workInfo.getState() == WorkInfo.State.RUNNING)
+                    return true;
+            }
+            return false;
+        } catch (ExecutionException e) {
+            Log.e(TAG,e.getMessage(),e);
+            return false;
+        } catch (InterruptedException e) {
+            Log.e(TAG,e.getMessage(),e);
+            return false;
+        }
+    }
 }
