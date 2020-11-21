@@ -27,6 +27,7 @@ public class PhotoRepository {
 
     public static final String TAG = "photRepository";
     private final MutableLiveData<List<GalleryItem>> mSearchItemsLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<GalleryItem>> mPopularItemsLiveData = new MutableLiveData<>();
 
     private FlickrFetcher mFetcher;
     private FlickrService mFlickrService;
@@ -37,6 +38,10 @@ public class PhotoRepository {
 
     public MutableLiveData<List<GalleryItem>> getSearchItemsLiveData() {
         return mSearchItemsLiveData;
+    }
+
+    public MutableLiveData<List<GalleryItem>> getPopularItemsLiveData() {
+        return mPopularItemsLiveData;
     }
 
     public List<GalleryItem> fetchItems() {
@@ -73,6 +78,29 @@ public class PhotoRepository {
 
                 //update adapter of recyclerview
                 mSearchItemsLiveData.setValue(items);
+            }
+
+            //this run on main thread
+            @Override
+            public void onFailure(Call<List<GalleryItem>> call, Throwable t) {
+                Log.e(TAG, t.getMessage(), t);
+            }
+        });
+    }
+
+    public void fetchPopularItemsAsync(){
+        Call<List<GalleryItem>> call =
+                mFlickrService.listItems(NetworkParams.getPopularOptions());
+
+        call.enqueue(new Callback<List<GalleryItem>>() {
+
+            //this run on main thread
+            @Override
+            public void onResponse(Call<List<GalleryItem>> call, Response<List<GalleryItem>> response) {
+                List<GalleryItem> items = response.body();
+
+                //update adapter of recyclerview
+                mPopularItemsLiveData.setValue(items);
             }
 
             //this run on main thread

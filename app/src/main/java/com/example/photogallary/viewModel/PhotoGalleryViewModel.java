@@ -1,23 +1,25 @@
 package com.example.photogallary.viewModel;
 
 import android.app.Application;
-import android.os.Build;
-import android.provider.ContactsContract;
+import android.net.Uri;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModel;
 
 import com.example.photogallary.model.GalleryItem;
+import com.example.photogallary.netWork.NetworkParams;
 import com.example.photogallary.repository.PhotoRepository;
 import com.example.photogallary.utilities.QueryPreferences;
 import com.example.photogallary.work.PollWorker;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PhotoGalleryViewModel extends AndroidViewModel {
 
+    public static final String TAG = "PGVM";
     private PhotoRepository mRepository;
     private final LiveData<List<GalleryItem>> msearchItemsLiveData;
     private final LiveData<List<GalleryItem>> mpopularItemsLiveData;
@@ -59,7 +61,7 @@ public class PhotoGalleryViewModel extends AndroidViewModel {
     }
 
     public void fetchPopularItemsAsync(String query){
-        mRepository.fetchPopularItemsAsync(query);
+        mRepository.fetchPopularItemsAsync();
     }
 
     public void setPopularQueryInPreferences(String query){
@@ -83,6 +85,21 @@ public class PhotoGalleryViewModel extends AndroidViewModel {
         }
     }
 
+    public List<GalleryItem> getCurrentItems(){
+
+        String query = QueryPreferences.getSearchQuery(getApplication());
+        if (query != null && msearchItemsLiveData.getValue() != null) {
+
+            return msearchItemsLiveData.getValue();
+        }
+        else if (query == null && mpopularItemsLiveData.getValue() != null){
+            return mpopularItemsLiveData.getValue();
+        }
+        else {
+            return new ArrayList<>();
+        }
+    }
+
     public void togglePolling(){
 
         boolean isOn = PollWorker.isWorkEnqueued(getApplication());
@@ -92,5 +109,12 @@ public class PhotoGalleryViewModel extends AndroidViewModel {
     public boolean isTaskScheduled() {
 
         return PollWorker.isWorkEnqueued(getApplication());
+    }
+
+    public void onImageClicked(int position){
+
+        GalleryItem item = getCurrentItems().get(position);
+        Uri photoPageUri = NetworkParams.getPhotoPageUri(item);
+        Log.d(TAG,photoPageUri.toString());
     }
 }

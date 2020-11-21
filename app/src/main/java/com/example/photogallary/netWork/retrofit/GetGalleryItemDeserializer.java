@@ -42,8 +42,9 @@ public class GetGalleryItemDeserializer implements JsonDeserializer<List<Gallery
             String id = photoObject.get("id").getAsString();
             String title = photoObject.get("title").getAsString();
             String url_s = photoObject.get("url_s").getAsString();
+            String owner = photoObject.get("owner").getAsString();
 
-            GalleryItem item = new GalleryItem(id,title,url_s);
+            GalleryItem item = new GalleryItem(id,title,url_s,owner);
             items.add(item);
 
         }

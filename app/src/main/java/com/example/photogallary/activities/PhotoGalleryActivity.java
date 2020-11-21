@@ -13,10 +13,18 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.photogallary.fragments.PhotoGalleryFragment;
-import com.example.photogallary.service.MyService;
 
 public class PhotoGalleryActivity extends SingleFragmentActivity {
-    private MyService mMyService;
+
+    public static Intent newIntent(Context context) {
+        return new Intent(context, PhotoGalleryActivity.class);
+    }
+
+    @Override
+    public Fragment createFragment() {
+        return PhotoGalleryFragment.newInstance();
+    }
+   /* private MyService mMyService;
     private boolean mBound = false;
     private static int instansec = 1;
 
@@ -78,5 +86,5 @@ public class PhotoGalleryActivity extends SingleFragmentActivity {
 
             mBound = false;
         }
-    };
+    };*/
 }
