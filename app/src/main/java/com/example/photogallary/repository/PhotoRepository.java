@@ -44,23 +44,47 @@ public class PhotoRepository {
         return mPopularItemsLiveData;
     }
 
-    public List<GalleryItem> fetchItems() {
-
-        String url = mFetcher.getRecentUrl();
-
+    public List<GalleryItem> fetchPopularItems() {
+        Call<List<GalleryItem>> call = mFlickrService.listItems(NetworkParams.getPopularOptions());
         try {
-            String response = mFetcher.getUrlString(url);
-            Log.d(TAG, "response" + response);
-
-            JSONObject bodyObject = new JSONObject(response);
-            List<GalleryItem> items = parsejson(bodyObject);
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
-
-            return items;
-        } catch (IOException | JSONException e) {
+            Response<List<GalleryItem>> response = call.execute();
+            return response.body();
+        } catch (IOException e) {
             Log.e(TAG, e.getMessage(), e);
+            return null;
+        }
+    }
 
+    public void fetchPopularItemsAsync(){
+        Call<List<GalleryItem>> call =
+                mFlickrService.listItems(NetworkParams.getPopularOptions());
+
+        call.enqueue(new Callback<List<GalleryItem>>() {
+
+            //this run on main thread
+            @Override
+            public void onResponse(Call<List<GalleryItem>> call, Response<List<GalleryItem>> response) {
+                List<GalleryItem> items = response.body();
+
+                //update adapter of recyclerview
+                mPopularItemsLiveData.setValue(items);
+            }
+
+            //this run on main thread
+            @Override
+            public void onFailure(Call<List<GalleryItem>> call, Throwable t) {
+                Log.e(TAG, t.getMessage(), t);
+            }
+        });
+    }
+
+    public List<GalleryItem> fetchSearchItems(String query) {
+        Call<List<GalleryItem>> call = mFlickrService.listItems(NetworkParams.getSearchOptions(query));
+        try {
+            Response<List<GalleryItem>> response = call.execute();
+            return response.body();
+        } catch (IOException e) {
+            Log.e(TAG, e.getMessage(), e);
             return null;
         }
     }
@@ -88,28 +112,6 @@ public class PhotoRepository {
         });
     }
 
-    public void fetchPopularItemsAsync(){
-        Call<List<GalleryItem>> call =
-                mFlickrService.listItems(NetworkParams.getPopularOptions());
-
-        call.enqueue(new Callback<List<GalleryItem>>() {
-
-            //this run on main thread
-            @Override
-            public void onResponse(Call<List<GalleryItem>> call, Response<List<GalleryItem>> response) {
-                List<GalleryItem> items = response.body();
-
-                //update adapter of recyclerview
-                mPopularItemsLiveData.setValue(items);
-            }
-
-            //this run on main thread
-            @Override
-            public void onFailure(Call<List<GalleryItem>> call, Throwable t) {
-                Log.e(TAG, t.getMessage(), t);
-            }
-        });
-    }
 
     private List<GalleryItem> parsejson(JSONObject bodyObject) throws JSONException {
         List<GalleryItem> items = new ArrayList<>();

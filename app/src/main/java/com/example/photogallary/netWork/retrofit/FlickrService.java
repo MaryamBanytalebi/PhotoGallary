@@ -1,7 +1,6 @@
 package com.example.photogallary.netWork.retrofit;
 
 import com.example.photogallary.model.GalleryItem;
-import com.example.photogallary.netWork.model.FlickrResponse;
 
 import java.util.List;
 import java.util.Map;

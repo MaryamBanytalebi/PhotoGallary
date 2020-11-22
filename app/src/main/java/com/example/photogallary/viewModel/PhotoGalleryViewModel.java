@@ -1,6 +1,7 @@
 package com.example.photogallary.viewModel;
 
 import android.app.Application;
+import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
 
@@ -8,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.photogallary.activities.PhotoPageActivity;
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.netWork.NetworkParams;
 import com.example.photogallary.repository.PhotoRepository;
@@ -116,5 +118,16 @@ public class PhotoGalleryViewModel extends AndroidViewModel {
         GalleryItem item = getCurrentItems().get(position);
         Uri photoPageUri = NetworkParams.getPhotoPageUri(item);
         Log.d(TAG,photoPageUri.toString());
+
+        //explicit Intent
+        Intent intent = PhotoPageActivity.newIntent(getApplication(),photoPageUri);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        getApplication().startActivity(intent);
+
+        //Implicit Intent
+        /*Intent intent = new Intent(Intent.ACTION_VIEW, photoPageUri);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        getApplication().startActivity(intent);*/
+
     }
 }

@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -62,11 +63,16 @@ public class PhotoGalleryFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
+        mViewModel = new ViewModelProvider(this).get(PhotoGalleryViewModel.class);
+
+        mViewModel.fetchItems();
+        setLiveDataObservers();
+
+
+
+
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         final int cacheSize = maxMemory / 8;
-
-        mRepository = new PhotoRepository();
-
         memoryCache = new LruCache<String, Bitmap>(cacheSize) {
             @Override
             protected int sizeOf(String key, Bitmap bitmap) {
@@ -78,13 +84,6 @@ public class PhotoGalleryFragment extends Fragment {
 
        /* FlickrTask flickrTask = new FlickrTask();
         flickrTask.execute();*/
-
-        mRepository.fetchPopularItemsAsync(new PhotoRepository.Callbacks() {
-            @Override
-            public void onItemResponse(List<GalleryItem> items) {
-                setupAdapter(items);
-            }
-        });
 
        /* Handler uiHandler = new Handler();
 
