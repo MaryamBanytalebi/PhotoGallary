@@ -136,6 +136,8 @@ public class PollService extends IntentService {
         /*alarmManager.set(AlarmManager.RTC,
                 System.currentTimeMillis(),
                 operation);*/
+
+        QueryPreferences.setIsAlarmOn(context,isOn);
     }
 
     public static boolean isAlarmSet(Context context){

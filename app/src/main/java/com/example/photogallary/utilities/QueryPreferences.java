@@ -7,6 +7,7 @@ public class QueryPreferences {
     private static final String PREF_SEARCH_QUERY="search_query";
     private static final String PREF_TEST_IS_SEARCH="isSearchQuery";
     private static final String PREF_LAST_ID="LastId";
+    private static final String PREF_IS_ALARM_ON="IsAlarmon";
 
     public static String getSearchQuery(Context context){
         //mode=private that nobody can use prefrene
@@ -60,6 +61,20 @@ public class QueryPreferences {
                 .putString(PREF_LAST_ID,query)
                 .apply();
     }
+
+    public static boolean isAlarmOn(Context context){
+        return getSharedPreferences(context).getBoolean(PREF_IS_ALARM_ON,false);
+
+    }
+
+    public static void setIsAlarmOn(Context context,boolean isAlarmOn){
+        getSharedPreferences(context)
+                .edit()
+                .putBoolean(PREF_IS_ALARM_ON,isAlarmOn)
+                .apply();
+    }
+
+
     private static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(context.getPackageName(),context.MODE_PRIVATE);
     }
