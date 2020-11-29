@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SearchView;
 
+import com.example.photogallary.PhotoGalleryApplication;
 import com.example.photogallary.databinding.FragmentPhotoGalleryBinding;
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.R;
@@ -40,6 +41,8 @@ public class PhotoGalleryFragment extends Fragment {
     private PhotoRepository mRepository;
     private Handler mHandlerUI;
     private PhotoGalleryViewModel mViewModel;
+    private PhotoGalleryApplication mPhotoGalleryApplication;
+
 
     //private ThumbNailDownloader<PhotoHolder> mThumbNailDownloader;
     private LruCache<String, Bitmap> memoryCache;
