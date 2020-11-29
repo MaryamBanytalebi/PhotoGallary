@@ -20,7 +20,7 @@ import com.example.photogallary.R;
 import com.example.photogallary.databinding.FragmentPhotoGalleryBinding;
 import com.example.photogallary.databinding.FragmentPhotoPageBinding;
 
-public class PhotoPageFragment extends Fragment {
+public class PhotoPageFragment extends VisibleFragment {
 
     public static final String ARGS_PHOTO_PAGE_URI = "photoPageUri";
     private FragmentPhotoPageBinding mBinding;

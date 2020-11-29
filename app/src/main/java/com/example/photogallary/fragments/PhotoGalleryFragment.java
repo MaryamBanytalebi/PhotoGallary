@@ -33,7 +33,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-public class PhotoGalleryFragment extends Fragment {
+public class PhotoGalleryFragment extends VisibleFragment {
 
     public static final int SPAN_COUNT = 2;
     public static final String TAG = "PGF";
