@@ -25,11 +25,6 @@ public class ServicesUtils {
 
     public static final int NOTIFICATION_ID = 1;
 
-    public static final String ACTION_PRIVATE_NOTIFICATION =
-            "com.example.photogallary.ACTION.PRIVATE_NOTIFICATION";
-    public static final String PERMISSION_PRIVATE_NOTIFICATION =
-            "com.example.photogallary.PRIVATE";
-
     public static final String EXTRA_NOTIFICATION_ID = "com.example.photogallary.notificationId";
     public static final String EXTRA_NOTIFICATION = "com.example.photogallary.notification";
 
@@ -80,17 +75,6 @@ public class ServicesUtils {
 
         NotificationEvent notificationEvent = new NotificationEvent(NOTIFICATION_ID,notification);
         EventBus.getDefault().post(notificationEvent);
-
-       /* Intent intent = new Intent(ACTION_PRIVATE_NOTIFICATION);
-        intent.putExtra(EXTRA_NOTIFICATION_ID,NOTIFICATION_ID);
-        intent.putExtra(EXTRA_NOTIFICATION,notification);
-        context.sendOrderedBroadcast(intent,
-                PERMISSION_PRIVATE_NOTIFICATION,
-                null,
-                null,
-                Activity.RESULT_OK,
-                null,
-                null);*/
 
     }
 

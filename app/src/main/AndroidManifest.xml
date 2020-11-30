@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.photogallary">
 
-    <permission android:name="com.example.photogallary.PRIVATE"
-        android:protectionLevel="signature"/>
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -17,15 +15,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PhotoGallary">
-        <receiver
-            android:name=".receiver.PGNotificationReceiver"
-            android:enabled="false"
-            android:exported="false"
-            android:permission="com.example.photogallary.PRIVATE">
-            <intent-filter android:priority="-999">
-                <action android:name="com.example.photogallary.ACTION.PRIVATE_NOTIFICATION"/>
-            </intent-filter>
-        </receiver>
 
         <activity
             android:name=".activities.PhotoPageActivity"

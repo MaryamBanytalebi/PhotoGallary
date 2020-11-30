@@ -20,7 +20,6 @@ import android.widget.Toast;
 import com.example.photogallary.PhotoGalleryApplication;
 import com.example.photogallary.R;
 import com.example.photogallary.event.NotificationEvent;
-import com.example.photogallary.receiver.PGNotificationReceiver;
 import com.example.photogallary.utilities.ServicesUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -29,29 +28,11 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class VisibleFragment extends Fragment {
 
-    /*private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(PGNotificationReceiver.TAG,"fragment is visible"+intent);
-            Toast.makeText(context,
-                    "The app is visible and just receive a notofication event",
-                    Toast.LENGTH_SHORT)
-                    .show();
-
-            setResultCode(Activity.RESULT_CANCELED);
-        }
-    };*/
-
     @Override
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
 
-        /*IntentFilter intentFilter = new IntentFilter(ServicesUtils.ACTION_PRIVATE_NOTIFICATION);
-        getActivity().registerReceiver(mReceiver,
-                intentFilter,
-                ServicesUtils.PERMISSION_PRIVATE_NOTIFICATION,
-                null);*/
     }
 
     @Override
