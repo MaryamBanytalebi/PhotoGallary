@@ -19,12 +19,17 @@ import android.widget.Toast;
 
 import com.example.photogallary.PhotoGalleryApplication;
 import com.example.photogallary.R;
+import com.example.photogallary.event.NotificationEvent;
 import com.example.photogallary.receiver.PGNotificationReceiver;
 import com.example.photogallary.utilities.ServicesUtils;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 public class VisibleFragment extends Fragment {
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+    /*private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(PGNotificationReceiver.TAG,"fragment is visible"+intent);
@@ -35,22 +40,34 @@ public class VisibleFragment extends Fragment {
 
             setResultCode(Activity.RESULT_CANCELED);
         }
-    };
+    };*/
 
     @Override
     public void onStart() {
         super.onStart();
+        EventBus.getDefault().register(this);
 
-        IntentFilter intentFilter = new IntentFilter(ServicesUtils.ACTION_PRIVATE_NOTIFICATION);
+        /*IntentFilter intentFilter = new IntentFilter(ServicesUtils.ACTION_PRIVATE_NOTIFICATION);
         getActivity().registerReceiver(mReceiver,
                 intentFilter,
                 ServicesUtils.PERMISSION_PRIVATE_NOTIFICATION,
-                null);
+                null);*/
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        getActivity().unregisterReceiver(mReceiver);
+        EventBus.getDefault().unregister(this);
+
+        // getActivity().unregisterReceiver(mReceiver);
+    }
+
+    @Subscribe(threadMode = ThreadMode.POSTING, priority = 2)
+    public void onNotificationEventListener(NotificationEvent notificationEvent){
+        String msg = "Application received the notification event";
+        Log.d(PhotoGalleryApplication.TAG_EVENT_BUS,msg);
+
+        EventBus.getDefault().cancelEventDelivery(notificationEvent);
+
     }
 }

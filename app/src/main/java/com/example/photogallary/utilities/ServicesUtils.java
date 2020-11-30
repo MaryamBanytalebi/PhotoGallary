@@ -13,8 +13,11 @@ import androidx.core.app.NotificationManagerCompat;
 import com.example.photogallary.PhotoGalleryApplication;
 import com.example.photogallary.R;
 import com.example.photogallary.activities.PhotoGalleryActivity;
+import com.example.photogallary.event.NotificationEvent;
 import com.example.photogallary.model.GalleryItem;
 import com.example.photogallary.repository.PhotoRepository;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -75,7 +78,10 @@ public class ServicesUtils {
                 .setContentIntent(pendingIntent)
                 .build();
 
-        Intent intent = new Intent(ACTION_PRIVATE_NOTIFICATION);
+        NotificationEvent notificationEvent = new NotificationEvent(NOTIFICATION_ID,notification);
+        EventBus.getDefault().post(notificationEvent);
+
+       /* Intent intent = new Intent(ACTION_PRIVATE_NOTIFICATION);
         intent.putExtra(EXTRA_NOTIFICATION_ID,NOTIFICATION_ID);
         intent.putExtra(EXTRA_NOTIFICATION,notification);
         context.sendOrderedBroadcast(intent,
@@ -84,7 +90,7 @@ public class ServicesUtils {
                 null,
                 Activity.RESULT_OK,
                 null,
-                null);
+                null);*/
 
     }
 

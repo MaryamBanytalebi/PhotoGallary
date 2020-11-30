@@ -13,10 +13,17 @@ import android.util.Log;
 
 import androidx.core.app.NotificationManagerCompat;
 
+import com.example.photogallary.event.NotificationEvent;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.function.Consumer;
 
 public class PhotoGalleryApplication extends Application {
 
+    public static final String TAG_EVENT_BUS = "EventBus";
     private static final String TAG = "PhotoGalleryApplication";
     private Context mContext = this;
 
@@ -25,6 +32,13 @@ public class PhotoGalleryApplication extends Application {
         super.onCreate();
         Log.d(TAG,"onCreat");
         creatNotificationChannel();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        EventBus.getDefault().unregister(this);
     }
 
     private void creatNotificationChannel(){
@@ -52,6 +66,18 @@ public class PhotoGalleryApplication extends Application {
             notificationManager.createNotificationChannel(channel);
 
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.POSTING, priority = 1)
+    public void onNotificationEvent(NotificationEvent notificationEvent){
+
+        String msg = "The fragment received the notification event";
+        Log.d(TAG_EVENT_BUS,msg);
+
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat
+                .from(this);
+        notificationManagerCompat.notify(notificationEvent.getNotificationId(),
+                notificationEvent.getNotification());
     }
 }
 
