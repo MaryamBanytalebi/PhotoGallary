@@ -22,7 +22,7 @@
             android:enabled="false"
             android:exported="false"
             android:permission="com.example.photogallary.PRIVATE">
-            <intent-filter>
+            <intent-filter android:priority="-999">
                 <action android:name="com.example.photogallary.ACTION.PRIVATE_NOTIFICATION"/>
             </intent-filter>
         </receiver>

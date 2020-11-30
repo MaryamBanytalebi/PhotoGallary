@@ -1,5 +1,6 @@
 package com.example.photogallary.receiver;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,6 +20,11 @@ public class PGNotificationReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "received intent:" + intent);
+
+        if (getResultCode() != Activity.RESULT_OK){
+            Log.d(TAG,"the notification request has been canceled");
+            return;
+        }
 
         int notificationId = intent.getIntExtra(ServicesUtils.EXTRA_NOTIFICATION_ID,0);
         Notification notification = intent.getParcelableExtra(ServicesUtils.EXTRA_NOTIFICATION);

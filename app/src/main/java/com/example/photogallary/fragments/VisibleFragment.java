@@ -1,6 +1,7 @@
 package com.example.photogallary.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -31,6 +32,8 @@ public class VisibleFragment extends Fragment {
                     "The app is visible and just receive a notofication event",
                     Toast.LENGTH_SHORT)
                     .show();
+
+            setResultCode(Activity.RESULT_CANCELED);
         }
     };
 
