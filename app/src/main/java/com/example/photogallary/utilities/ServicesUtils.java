@@ -52,7 +52,6 @@ public class ServicesUtils {
         if (! serverId.equals(lastSaveId) ) {
             Log.d(tag,"show notification");
             //show notification
-            //creatAndShowNotification(context);
             //send BR Intent insteadof notification.
             sendNotificationEvent(context);
         }
@@ -79,7 +78,6 @@ public class ServicesUtils {
         Intent intent = new Intent(ACTION_PRIVATE_NOTIFICATION);
         intent.putExtra(EXTRA_NOTIFICATION_ID,NOTIFICATION_ID);
         intent.putExtra(EXTRA_NOTIFICATION,notification);
-        //context.sendBroadcast(intent,PERMISSION_PRIVATE_NOTIFICATION);
         context.sendOrderedBroadcast(intent,
                 PERMISSION_PRIVATE_NOTIFICATION,
                 null,
